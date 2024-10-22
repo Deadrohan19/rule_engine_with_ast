@@ -189,6 +189,7 @@ class Parser(object):
         elif self.current_token.type == STRING:
             node = self.comparision()
             return node
+        raise SyntaxError(expected=STRING, got=self.current_token.type, val=self.current_token.value)
 
     def expr(self):
         """

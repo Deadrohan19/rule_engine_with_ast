@@ -20,7 +20,7 @@ class InvalidTokenError(Exception):
         pos: position of token
     """
     def __init__(self, token, pos):
-        self.message = "Invalid token: '{}' at position {}".format(token, pos)
+        self.message = "InvalidToken: '{}' at position {}".format(token, pos)
         super().__init__(self.message)
 
 class TypeError(Exception):

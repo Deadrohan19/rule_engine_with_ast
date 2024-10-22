@@ -1,12 +1,17 @@
 [tool.poetry]
 name = "rule-engine"
 version = "0.1.0"
-description = ""
+description = "rule engine with ast"
 authors = ["rohan <rohanjaiswal511@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+fastapi = "^0.115.2"
+sqlalchemy = "^2.0.36"
+uvicorn = "^0.32.0"
+python-dotenv = "^1.0.1"
+psycopg2-binary = "^2.9.10"
 
 
 [build-system]

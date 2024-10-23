@@ -6,10 +6,14 @@ API endpoints
 """
 import json
 from globalDS import catalog
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from psycopg2.errors import UniqueViolation
 
 from rule_engine import models, database
 from rule_engine.abstract_tree import AST, ast_to_json, json_to_ast
@@ -78,6 +82,16 @@ def create_rule(rule_string: CreateParam, db: Session = Depends(init_db)):
 
         rule_data = json.loads(rule_json)
         return JSONResponse(rule_data)
+    # Handle specific IntegrityError caused by UniqueViolation
+    except IntegrityError as e:
+        if isinstance(e.orig, UniqueViolation):
+            # If the error is a UniqueViolation, return a proper HTTP response
+            raise HTTPException(
+                status_code=400,
+                detail=f"Rule with the name '{rule_string.name}' already exists. Please choose a different name."
+            )
+        else:
+            raise HTTPException(status_code=400, detail="Database error occurred.")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

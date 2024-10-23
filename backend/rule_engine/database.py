@@ -14,6 +14,12 @@ def get_rule(db: Session, rule_name: str) -> Rule:
     """
     return db.query(Rule).filter(Rule.rule_name == rule_name).first()
 
+def get_all_rule_names(db: Session) -> list[str]:
+    """
+    Retrieve all rule names from the database.
+    """
+    return [rule.rule_name for rule in db.query(Rule).all()]
+
 
 def create_rule(db: Session, rule_name: str, rule_str: str, rule_json: str) -> Rule:
     """

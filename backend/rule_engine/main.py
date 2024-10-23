@@ -183,6 +183,16 @@ def get_rule(rule_name: str, db: Session = Depends(init_db)):
     rule_data = json.loads(rule.rule_json)
     return JSONResponse(rule_data)
 
+@app.get("/get_all_rule_names", response_model= list[str])
+def get_all_rule_names(db: Session = Depends(init_db)):
+    """
+    Retrieve all rule names from the database.
+
+    Returns:
+        List[str]: List of rule names.
+    """
+    return JSONResponse(database.get_all_rule_names(db))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

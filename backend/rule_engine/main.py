@@ -8,6 +8,7 @@ import json
 from globalDS import catalog
 
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -19,6 +20,20 @@ from rule_engine import models, database
 from rule_engine.abstract_tree import AST, ast_to_json, json_to_ast
 
 app = FastAPI()
+
+# List of allowed origins (adjust as needed)
+origins = [
+    "http://localhost:3000",  # If your frontend is on port 3000
+    "http://localhost:5000",  # If the backend is making internal requests
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Can also be ['*'] to allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 class CreateParam(BaseModel):
     """Pydantic model for an create request."""

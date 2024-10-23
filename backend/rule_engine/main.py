@@ -163,6 +163,26 @@ def get_catalog():
     """
     return JSONResponse(catalog)
 
+@app.get("/get_rule", response_model=ASTNode)
+def get_rule(rule_name: str, db: Session = Depends(init_db)):
+    """
+    Get a stored rule from the database.
+
+    Args:
+        rule_name (str): The name of the rule to retrieve.
+        db (Session): Database session to retrieve the rule.
+
+    Returns:
+        ASTNode: Root node of the retrieved rule in JSON format.
+    Raises:
+        HTTPException: 404 error if the rule is not found in the database.
+    """
+    rule = database.get_rule(db, rule_name=rule_name)
+    if rule is None:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    rule_data = json.loads(rule.rule_json)
+    return JSONResponse(rule_data)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

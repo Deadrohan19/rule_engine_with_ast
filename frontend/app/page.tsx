@@ -343,7 +343,7 @@ export default function RuleEngine() {
                     )}
                   </div>
                 ))}
-                <div className="flex space-x-2 mb-4">
+                <div className="flex space-x-2 mt-4">
                   <Button onClick={handleAddRule} variant="outline">
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Rule
                   </Button>

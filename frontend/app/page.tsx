@@ -178,6 +178,8 @@ export default function RuleEngine() {
     try {
       await deleteRule(activeRule);
       await getRules();
+      setTreeData(null);
+      setActiveRule("");
       toast.success("Rule deleted successfully");
     } catch (error) {
       console.error("Error deleting rule:", error);
@@ -195,6 +197,7 @@ export default function RuleEngine() {
         combinedRules,
         isAndOperation ? "AND" : "OR"
       );
+      setActiveRule("")
       setTreeData(response);
       await updateCatalog();
       await getRules();

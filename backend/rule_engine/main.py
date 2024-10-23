@@ -134,6 +134,29 @@ def evaluate_rule(request: EvaluateParam, db: Session = Depends(init_db)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@app.post("/modify_rule", response_model=ASTNode)
+def modify_rule(rule_string: CreateParam, db: Session = Depends(init_db)):
+    """
+    Modify an existing rule in the database.
+
+    Args:
+        rule_string: The rule string and its associated name.
+        db (Session): Database session for modifying the rule.
+
+    Returns:
+        ASTNode: Root node of the modified AST in JSON format.
+    Raises:
+        HTTPException: If rule parsing fails or any error occurs, returns a 400 error with the failure details.
+    """
+    try:
+        rule_ast = ast.create_rule(rule_string.rule)
+        rule_json = ast_to_json(rule_ast)
+        database.modify_rule(db,rule_name=rule_string.name, new_rule_str=rule_string.rule, new_rule_json=rule_json)
+        rule_data = json.loads(rule_json)
+        return JSONResponse(rule_data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @app.post("/combine_rules", response_model= ASTNode)
 def combine_rules(rule_list: CombineParam, db: Session = Depends(init_db)):
     """
@@ -192,6 +215,26 @@ def get_all_rule_names(db: Session = Depends(init_db)):
         List[str]: List of rule names.
     """
     return JSONResponse(database.get_all_rule_names(db))
+
+@app.delete("/delete_rule")
+def delete_rule(rule_name: str, db: Session = Depends(init_db)):
+    """
+    Delete a stored rule from the database.
+
+    Args:
+        rule_name (str): The name of the rule to delete.
+        db (Session): Database session to delete the rule.
+
+    Returns:
+        None
+    Raises:
+        HTTPException: 404 error if the rule is not found in the database.
+    """
+    rule = database.get_rule(db, rule_name=rule_name)
+    if rule is None:
+        raise HTTPException(status_code=404, detail="Rule not found")
+    database.delete_rule(db, rule_name=rule_name)
+    return
 
 if __name__ == "__main__":
     import uvicorn

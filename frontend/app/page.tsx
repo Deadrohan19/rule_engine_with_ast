@@ -39,6 +39,8 @@ import {
   getCatalog,
   getAllRuleNames,
   getRule,
+  deleteRule,
+  modifyRule,
 } from "./api/route";
 import { toast, Toaster } from "sonner";
 
@@ -50,29 +52,31 @@ export default function RuleEngine() {
   const [combinedRules, setCombinedRules] = useState(["", ""]);
   const [isAndOperation, setIsAndOperation] = useState(true);
   const [evaluateRuleName, setEvaluateRuleName] = useState("");
+  const [modifyRuleName, setModifyRuleName] = useState("");
+  const [modifyRuleString, setModifyRuleString] = useState("");
   const [jsonData, setJsonData] = useState("");
   const [result, setResult] = useState(null);
   const [treeData, setTreeData] = useState(null);
   const [catalog, setCatalog] = useState({});
   const [isCatalogCollapsed, setIsCatalogCollapsed] = useState(false);
 
-  const updateCatalog = useCallback( async () => {
+  const updateCatalog = useCallback(async () => {
     try {
       const response = await getCatalog();
       setCatalog(response);
     } catch (error) {
       console.error("Error getting catalog:", error);
-      toast.error('Failed to update catalog');
+      toast.error("Failed to update catalog");
     }
   }, []);
 
-  const getRules = useCallback( async () => {
+  const getRules = useCallback(async () => {
     try {
       const response = await getAllRuleNames();
       setRules(response);
     } catch (error) {
       console.error("Error getting rules:", error);
-      toast.error('Failed to fetch rules')
+      toast.error("Failed to fetch rules");
     }
   }, []);
 
@@ -99,6 +103,14 @@ export default function RuleEngine() {
     }
   }, [activeRule]);
 
+  useEffect(() => {
+    setActiveRule(evaluateRuleName)
+  }, [evaluateRuleName]);
+
+    useEffect(() => {
+    setActiveRule(modifyRuleName)
+  }, [modifyRuleName]);
+
   const handleCreateRule = async () => {
     if (!ruleName.trim() || !ruleString.trim()) {
       toast.error("Rule name and string are required");
@@ -123,6 +135,9 @@ export default function RuleEngine() {
     }
     try {
       const data = JSON.parse(jsonData);
+      if (data && typeof data !== "object") {
+        throw new SyntaxError();
+      }
       const response = await evaluateRule(evaluateRuleName, data);
       setResult(response.result);
       toast.success("Rule evaluated successfully");
@@ -138,6 +153,37 @@ export default function RuleEngine() {
     }
   };
 
+  const handleModifyRule = async () => {
+    if (!modifyRuleName.trim() || !modifyRuleString.trim()) {
+      toast.error("Rule name and string are required");
+      return;
+    }
+    try {
+      const response = await modifyRule(modifyRuleName, modifyRuleString);
+      await updateCatalog();
+      await getRules();
+      setTreeData(response);
+      toast.success("Rule modified successfully");
+    } catch (error) {
+      console.error("Error modifying rule:", error);
+      toast.error("Failed to modify rule", { description: error as string });
+    }
+  };
+
+  const handleDeleteRule = async () => {
+    if (!activeRule.trim()) {
+      toast.error("Rule name is required");
+      return;
+    }
+    try {
+      await deleteRule(activeRule);
+      await getRules();
+      toast.success("Rule deleted successfully");
+    } catch (error) {
+      console.error("Error deleting rule:", error);
+      toast.error("Failed to delete rule", { description: error as string });
+    }
+  }
   // Combine rules helper functions
   const handleCombineRules = async () => {
     if (combinedRules.some((rule) => !rule.trim())) {
@@ -178,7 +224,7 @@ export default function RuleEngine() {
 
   return (
     <div className="flex h-screen">
-      <Toaster position="top-right"/>
+      <Toaster position="top-right" />
       {/* catalog section */}
       <aside
         className={`bg-gray-100 p-4 transition-all duration-300 ease-in-out ${
@@ -195,7 +241,9 @@ export default function RuleEngine() {
             variant="ghost"
             size="icon"
             onClick={() => setIsCatalogCollapsed(!isCatalogCollapsed)}
-            aria-label={isCatalogCollapsed ? "Expand catalog" : "Collapse catalog"}
+            aria-label={
+              isCatalogCollapsed ? "Expand catalog" : "Collapse catalog"
+            }
           >
             {isCatalogCollapsed ? (
               <ChevronRight className="h-4 w-4" />
@@ -232,6 +280,7 @@ export default function RuleEngine() {
             <TabsTrigger value="create">Create Rule</TabsTrigger>
             <TabsTrigger value="combine">Combine Rules</TabsTrigger>
             <TabsTrigger value="evaluate">Evaluate Rule</TabsTrigger>
+            <TabsTrigger value="modify">Modify Rule</TabsTrigger>
           </TabsList>
           <TabsContent value="create">
             <Card>
@@ -249,9 +298,9 @@ export default function RuleEngine() {
                   placeholder="Enter rule string..."
                   value={ruleString}
                   onChange={(e) => setRuleString(e.target.value)}
-                  className="mb-4"
+                  className="mt-4"
                 />
-                <Button onClick={handleCreateRule}>Create Rule</Button>
+                <Button onClick={handleCreateRule} className="mt-4">Create Rule</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -306,43 +355,9 @@ export default function RuleEngine() {
                 <CardTitle>Evaluate Rule</CardTitle>
               </CardHeader>
               <CardContent>
-                <Input
-                  placeholder="Enter rule name to evaluate..."
-                  value={evaluateRuleName}
-                  onChange={(e) => setEvaluateRuleName(e.target.value)}
-                  className="mb-4"
-                />
-                <Textarea
-                  placeholder="Enter JSON data..."
-                  value={jsonData}
-                  onChange={(e) => setJsonData(e.target.value)}
-                  className="mb-4"
-                />
-                <Button onClick={handleEvaluateRule} className="mb-4">
-                  Evaluate Rule
-                </Button>
-                {result !== null && (
-                  <div>
-                    <Button variant="ghost">Result: </Button>
-                    {result ? (
-                      <Button variant="outline"><CircleCheckBig /> True</Button>
-                    ) : (
-                      <Button variant="destructive"><CircleX /> False</Button>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-        <Card className="mt-4">
-          <CardContent>
-            <div style={{ width: "100%", height: "500px" }}>
-              <div className="flex flex-row justify-between">
-                <Button className="rounded-none">Rule Tree</Button>
-                <Select onValueChange={setActiveRule}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder={activeRule || "select rule"} />
+                <Select onValueChange={setEvaluateRuleName}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select rule to evaluate" />
                   </SelectTrigger>
                   <SelectContent>
                     {rules.map((rule) => (
@@ -352,6 +367,89 @@ export default function RuleEngine() {
                     ))}
                   </SelectContent>
                 </Select>
+                <Textarea
+                  placeholder="Enter JSON data..."
+                  value={jsonData}
+                  onChange={(e) => setJsonData(e.target.value)}
+                  className="mt-4"
+                />
+                <Button onClick={handleEvaluateRule} className="mt-4">
+                  Evaluate Rule
+                </Button>
+                {result !== null && (
+                  <div className="mt-4">
+                    <Button variant="ghost">Result: </Button>
+                    {result ? (
+                      <Button variant="outline">
+                        <CircleCheckBig /> True
+                      </Button>
+                    ) : (
+                      <Button variant="destructive">
+                        <CircleX /> False
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="modify">
+            <Card>
+              <CardHeader>
+                <CardTitle>Modify Rule</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select onValueChange={setModifyRuleName}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select rule to modify" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rules.map((rule) => (
+                      <SelectItem key={rule} value={rule}>
+                        {rule}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Textarea
+                  placeholder="Enter new rule string..."
+                  value={modifyRuleString}
+                  onChange={(e) => setModifyRuleString(e.target.value)}
+                  className="mt-4"
+                />
+                <Button onClick={handleModifyRule} className="mt-4">
+                  Modify Rule
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+        <Card className="mt-4">
+          <CardContent>
+            <div style={{ width: "100%", height: "560px" }}>
+              <div className="flex flex-row justify-between">
+                <Button className="rounded-none">Rule Tree</Button>
+                <div className="flex flex-row space-x-2">
+                  <Select onValueChange={setActiveRule}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder={activeRule || "select rule"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {rules.map((rule) => (
+                        <SelectItem key={rule} value={rule}>
+                          {rule}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={handleDeleteRule}
+                    variant="destructive"
+                    disabled={!activeRule}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
               {treeData && <RuleTree root={treeData} />}
             </div>

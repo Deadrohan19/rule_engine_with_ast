@@ -35,7 +35,7 @@ export const combineRules = async (rules: string[], operator: string) => {
             }
         });
 };
-export const evaluateRule = async (ruleName: string, data: Record<string, any>) => {
+export const evaluateRule = async (ruleName: string, data: Record<string, string>) => {
     return axios.post(`${API_URL}/evaluate_rule`, { rule_name: ruleName, data }, config)
         .then((response) => response.data)
         .catch((error) => {
@@ -49,6 +49,33 @@ export const evaluateRule = async (ruleName: string, data: Record<string, any>) 
         });
 };
 
+export const modifyRule = async (ruleName: string, rule: string) => {
+    return axios.post(`${API_URL}/modify_rule`, { rule, name: ruleName }, config)
+        .then((response) => response.data)
+        .catch((error) => {
+            if (axios.isAxiosError(error)) {
+                console.error(error.response?.data.detail);
+                throw error.response?.data?.detail;
+            } else {
+                console.error('Unknown error modifying rules:', error);
+                throw error;
+            }
+        });
+};
+
+export const deleteRule = async (ruleName: string) => {
+    return axios.delete(`${API_URL}/delete_rule?rule_name=${ruleName}`)
+        .then((response) => response.data)
+        .catch((error) => {
+            if (axios.isAxiosError(error)) {
+                console.error(error.response?.data.detail);
+                throw error.response?.data?.detail;
+            } else {
+                console.error('Unknown error deleting rules:', error);
+                throw error;
+            }
+        });
+}
 export const getRule = async (ruleName: string) => {
     return axios.get(`${API_URL}/get_rule?rule_name=${ruleName}`)
         .then((response) => response.data)

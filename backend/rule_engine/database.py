@@ -40,7 +40,7 @@ def create_rule(db: Session, rule_name: str, rule_str: str, rule_json: str) -> R
     db.refresh(db_rule)
     return db_rule
 
-def update_rule(db: Session, rule_name: str, new_rule_str: str, new_rule_json: str) -> Rule:
+def modify_rule(db: Session, rule_name: str, new_rule_str: str, new_rule_json: str) -> Rule:
     """
     Update an existing rule in the database.
 
@@ -68,3 +68,17 @@ def update_rule(db: Session, rule_name: str, new_rule_str: str, new_rule_json: s
     db.refresh(db_rule)  # Refresh the object to reflect the latest state from the DB
 
     return db_rule
+
+def delete_rule(db: Session, rule_name: str) -> None:
+    """
+    Delete a rule from the database.
+
+    Args:
+        db (Session): The database session.
+        rule_name (str): The name of the rule to delete.
+
+    Returns:
+        None
+    """
+    db.query(Rule).filter(Rule.rule_name == rule_name).delete()
+    db.commit()

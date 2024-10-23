@@ -88,7 +88,7 @@ def test_invalid_rule_handling(ast):
 
     assert "Invalid" in str(excinfo.value)
 
-def test_attribute_validation(ast):
+def test_evaluate_rule_attribute_validation(ast):
     """
     Test validation of attributes during rule evaluation (e.g., correct data types).
     """

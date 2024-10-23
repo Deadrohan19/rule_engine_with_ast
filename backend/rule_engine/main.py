@@ -5,6 +5,7 @@ API endpoints
 
 """
 import json
+from globalDS import catalog
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -122,6 +123,16 @@ def combine_rules(rule_list: CombineParam, db: Session = Depends(init_db)):
         return JSONResponse(rule_data)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/get_catalog", response_model= dict)
+def get_catalog():
+    """
+    Send catalog containing attribute with their data type
+
+    Returns:
+        Catalog: Dictonary of {attr: data_type}
+    """
+    return JSONResponse(catalog)
 
 if __name__ == "__main__":
     import uvicorn

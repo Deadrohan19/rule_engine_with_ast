@@ -65,8 +65,11 @@ export default function RuleEngine() {
       const response = await getCatalog();
       setCatalog(response);
     } catch (error) {
-      console.error("Error getting catalog:", error);
-      toast.error("Failed to update catalog");
+        if (error instanceof Error) {
+          toast.error("Failed to update catalog", { description: error.message });
+        } else {
+          toast.error("Failed to update catalog", { description: "An unexpected error occurred" });
+        }
     }
   }, []);
 
@@ -75,8 +78,11 @@ export default function RuleEngine() {
       const response = await getAllRuleNames();
       setRules(response);
     } catch (error) {
-      console.error("Error getting rules:", error);
-      toast.error("Failed to fetch rules");
+        if (error instanceof Error) {
+          toast.error("Failed to fetch rules", { description: error.message });
+        } else {
+          toast.error("Failed to fetch rules", { description: "An unexpected error occurred" });
+        }
     }
   }, []);
 
@@ -87,8 +93,11 @@ export default function RuleEngine() {
       updateCatalog();
       toast.success(ruleName);
     } catch (error) {
-      console.error("Error getting rule:", error);
-      toast.error("Failed", { description: error as string });
+        if (error instanceof Error) {
+          toast.error("Failed to fetch rule", { description: error.message });
+        } else {
+          toast.error("Failed to fetch rule", { description: "An unexpected error occurred" });
+        }
     }
   };
 
@@ -123,8 +132,11 @@ export default function RuleEngine() {
       await getRules();
       toast.success("Rule created successfully");
     } catch (error) {
-      console.error("Error creating rule:", error);
-      toast.error("Failed to create rule", { description: error as string });
+        if (error instanceof Error) {
+          toast.error("Failed to create rule", { description: error.message });
+        } else {
+          toast.error("Failed to create rule", { description: "An unexpected error occurred" });
+        }
     }
   };
 
@@ -146,9 +158,11 @@ export default function RuleEngine() {
       if (error instanceof SyntaxError) {
         toast.error("Invalid JSON format. Please provide valid JSON.");
       } else {
-        toast.error("Failed to evaluate rule", {
-          description: error as string,
-        });
+          if (error instanceof Error) {
+            toast.error("Failed to evaluate rule", { description: error.message });
+          } else {
+            toast.error("Failed to evaluate rule", { description: "An unexpected error occurred" });
+          }
       }
     }
   };
@@ -165,8 +179,11 @@ export default function RuleEngine() {
       setTreeData(response);
       toast.success("Rule modified successfully");
     } catch (error) {
-      console.error("Error modifying rule:", error);
-      toast.error("Failed to modify rule", { description: error as string });
+        if (error instanceof Error) {
+          toast.error("Failed to modify rule", { description: error.message });
+        } else {
+          toast.error("Failed to modify rule", { description: "An unexpected error occurred" });
+        }
     }
   };
 
@@ -182,8 +199,11 @@ export default function RuleEngine() {
       setActiveRule("");
       toast.success("Rule deleted successfully");
     } catch (error) {
-      console.error("Error deleting rule:", error);
-      toast.error("Failed to delete rule", { description: error as string });
+        if (error instanceof Error) {
+          toast.error("Failed to delete rule", { description: error.message });
+        } else {
+          toast.error("Failed to delete rule", { description: "An unexpected error occurred" });
+        }
     }
   }
   // Combine rules helper functions
@@ -203,8 +223,12 @@ export default function RuleEngine() {
       await getRules();
       toast.success("Rules combined successfully");
     } catch (error) {
-      console.error("Error combining rules:", error);
-      toast.error("Failed to combine rules", { description: error as string });
+        console.error("Error combining rules:", error);
+        if (error instanceof Error) {
+          toast.error("Failed to combine rules", { description: error.message });
+        } else {
+          toast.error("Failed to combine rules", { description: "An unexpected error occurred" });
+        }
     }
   };
 

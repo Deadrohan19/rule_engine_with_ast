@@ -41,7 +41,7 @@ import {
   getRule,
   deleteRule,
   modifyRule,
-} from "./api/route";
+} from "@/api/route";
 import { toast, Toaster } from "sonner";
 
 export default function RuleEngine() {

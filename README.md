@@ -259,6 +259,13 @@ DB_NAME=rule_engine_db
 
 This setup allows you to run the PostgreSQL database in a containerized environment, providing isolation and easy setup across different development environments.
 
+## References
+
+- [Let's Build a Simple Interpreter by Ruslan Spivak ](https://ruslanspivak.com/lsbasi-part1/)
+
+- [React-d3-tree](https://bkrem.github.io/react-d3-tree/)
+
+- [Shadcn/ui](https://ui.shadcn.com/docs)
 ---
 
 This README provides a comprehensive guide to setting up, running, and understanding the Rule Engine project, including both backend and frontend components. For any additional questions or issues, please open an issue in the GitHub repository.

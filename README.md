@@ -48,6 +48,7 @@ The application follows a 3-tier architecture:
 2. **Backend API**: FastAPI-based RESTful API for rule management
 3. **Database**: PostgreSQL for persistent storage of rules
 
+
 ## Getting Started
 
 ### Prerequisites
@@ -266,6 +267,14 @@ This setup allows you to run the PostgreSQL database in a containerized environm
 - [React-d3-tree](https://bkrem.github.io/react-d3-tree/)
 
 - [Shadcn/ui](https://ui.shadcn.com/docs)
+
+## To Be Implemented
+
+- Auto extend the input area when content exceed current viewport
+- In evaluate method UI, 
+   > Add option to directly add - {attributes}: {value} like in table form
+- Extend to add more datatypes
+
 ---
 
 This README provides a comprehensive guide to setting up, running, and understanding the Rule Engine project, including both backend and frontend components. For any additional questions or issues, please open an issue in the GitHub repository.

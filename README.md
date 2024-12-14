@@ -1,14 +1,5 @@
 # Rule Engine with Abstract Syntax Tree (AST)
 
-> Zeotap | software Engineer Intern | Assignment | Application 1
-
-## Applicant Introduction
-
-Hi, I'm Rohan Jaiswal, a problem-solver and Full-Stack Developer skilled in React, Next.js and DSA.
-
-[LinkedIn](https://www.linkedin.com/in/deadrohan19/) | [LeetCode](https://leetcode.com/u/Deadrohan19/) | [Codeforces](https://codeforces.com/profile/deadrohan19)
-
-
 ## Project Overview
 
 This project implements a 3-tier rule engine application that determines user eligibility based on attributes like age, department, income, and spend. The system uses an Abstract Syntax Tree (AST) to represent conditional rules and allows for dynamic creation, combination, and modification of these rules.

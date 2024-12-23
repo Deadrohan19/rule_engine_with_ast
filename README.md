@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project implements a 3-tier rule engine application that determines user eligibility based on attributes like age, department, income, and spend. The system uses an Abstract Syntax Tree (AST) to represent conditional rules and allows for dynamic creation, combination, and modification of these rules.
+A rule engine with an Abstract Syntax Tree (AST) is a system that parses, represents, and evaluates rules (Expressions) using a hierarchical tree structure. In this context, the AST serves as an intermediary between the textual representation of a rule and its execution, enabling dynamic and flexible decision-making processes. Enabling system to dynamically create, combine, and modify these rules.
 
 ## Table of Contents
 
